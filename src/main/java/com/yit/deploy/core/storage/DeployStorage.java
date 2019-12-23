@@ -90,19 +90,10 @@ public abstract class DeployStorage {
         LinkedList<DeployRecordTable> list = new LinkedList<>();
 
         for (long id = from; id != start;) {
-            DeployRecordTable detail = commits.get(id);
-            if (detail == null) {
-                // in some cases, same commit detail may be executed more than once,
-                // but is OK, deal to the readonly behavior of the commits
-                commits.put(id, detail = loadCommitDetail(id));
-            }
-            if (detail == null) {
-                throw new IllegalConfigException("invalid commit id " + id);
-            }
-
+            DeployRecordTable detail = loadCommit(list, id);
             list.addFirst(detail);
-
             Long parentId = detail.getCommit().getParentId();
+
             if (parentId == null) {
                 if (start == 0) {
                     break;
@@ -121,18 +112,8 @@ public abstract class DeployStorage {
         LinkedList<DeployRecordTable> list = new LinkedList<>();
 
         for (long id = from; count-- > 0;) {
-            DeployRecordTable detail = commits.get(id);
-            if (detail == null) {
-                // in some cases, same commit detail may be executed more than once,
-                // but is OK, deal to the readonly behavior of the commits
-                commits.put(id, detail = loadCommitDetail(id));
-            }
-            if (detail == null) {
-                throw new IllegalConfigException("invalid commit id " + id);
-            }
-
+            DeployRecordTable detail = loadCommit(list, id);
             list.addFirst(detail);
-
             Long parentId = detail.getCommit().getParentId();
             if (parentId == null) {
                 break;
@@ -142,6 +123,25 @@ public abstract class DeployStorage {
         }
 
         return list;
+    }
+
+    private DeployRecordTable loadCommit(LinkedList<DeployRecordTable> list, long id) {
+        DeployRecordTable cache = commits.get(id);
+        if (cache != null) {
+            return cache;
+        }
+
+        // in some cases, same commit detail may be executed more than once,
+        // but is OK, deal to the readonly behavior of the commits
+        DeployRecordTable detail = loadCommitDetail(id);
+
+        if (detail == null) {
+            throw new IllegalConfigException("invalid commit id " + id);
+        }
+
+        commits.put(id, detail);
+
+        return detail;
     }
 
     public void appendCommitDetail(String targetBranch, DeployRecordTable recordTable) {
