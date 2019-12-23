@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yit.deploy.core.storage.persistent.ConfigMapper">
+
+    <resultMap id="Config" type="Config">
+        <id column="ID" property="id"/>
+        <id column="ENV_NAME" property="envName"/>
+        <id column="PROJECT_NAME" property="projectName"/>
+        <id column="NAMESPACE" property="namespace"/>
+
+        <id column="CONFIG_KEY" property="key"/>
+        <id column="CONFIG_VALUE" property="value"/>
+
+        <id column="LOCKED_BY" property="lockedBy"/>
+        <id column="LOCKED_TIME" property="lockedTime"/>
+    </resultMap>
+
+    <select id="getConfig" resultMap="Config">
+        SELECT
+            ID,
+            ENV_NAME,
+            PROJECT_NAME,
+            NAMESPACE,
+            CONFIG_KEY,
+            CONFIG_VALUE,
+            LOCKED_BY,
+            LOCKED_TIME
+        FROM CONFIG
+        WHERE 1=1
+        <if test="envName != null">
+            AND ENV_NAME = #{envName}
+        </if>
+        <if test="projectName != null">
+            AND PROJECT_NAME = #{projectName}
+        </if>
+        <if test="namespace != null">
+            AND NAMESPACE = #{namespace}
+        </if>
+        <if test="key != null">
+            AND CONFIG_KEY = #{key}
+        </if>
+    </select>
+    
+    <insert id="addConfig" useGeneratedKeys="true" keyColumn="ID" keyProperty="id">
+        INSERT INTO CONFIG(
+                           ENV_NAME,
+                           PROJECT_NAME,
+                           NAMESPACE,
+                           CONFIG_KEY
+        )
+        VALUES (
+                #{envName},
+                #{projectName},
+                #{namespace},
+                #{key}
+        )
+    </insert>
+
+    <select id="getLockedBy" resultType="string">
+        SELECT LOCKED_BY
+        FROM CONFIG
+        WHERE ID = #{id}
+    </select>
+
+    <update id="updateLockInfo">
+        UPDATE CONFIG
+        SET LOCKED_BY = #{lockedBy},
+            LOCKED_TIME = #{lockedTime}
+        WHERE ID = #{id}
+    </update>
+
+    <select id="getConfigValue" resultType="string">
+        SELECT CONFIG_VALUE
+        FROM CONFIG
+        WHERE ID = #{id}
+    </select>
+
+    <update id="setConfigValue">
+        UPDATE CONFIG
+        SET CONFIG_VALUE = #{value}
+        WHERE ID = #{id}
+    </update>
+</mapper>

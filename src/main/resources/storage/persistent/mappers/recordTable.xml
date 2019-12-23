@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yit.deploy.core.storage.persistent.RecordTableMapper">
+    <resultMap id="Commit" type="Commit">
+        <id column="ID" property="id"/>
+        <result column="AUTHOR" property="author"/>
+        <result column="TIMESTAMP" property="timestamp"/>
+        <result column="PARENT_ID" property="parentId"/>
+    </resultMap>
+
+    <select id="getCommit" resultMap="Commit">
+        SELECT ID, AUTHOR, TIMESTAMP, PARENT_ID
+        FROM COMMITS
+        WHERE ID = #{id}
+    </select>
+
+    <resultMap id="Branch" type="Branch">
+        <id column="NAME" property="name"/>
+        <result column="COMMIT_ID" property="head"/>
+    </resultMap>
+
+    <select id="getBranch" resultMap="Branch">
+        SELECT NAME, COMMIT_ID
+        FROM branches
+        WHERE NAME = #{name}
+    </select>
+
+    <select id="getBranches" resultMap="Branch">
+        SELECT NAME, COMMIT_ID
+        FROM branches
+    </select>
+
+    <resultMap id="EnvironmentRecord" type="EnvironmentRecord">
+        <id column="COMMIT_ID" property="commitId"/>
+        <id column="NAME"/>
+        <result column="DISABLED" property="disabled"/>
+        <result column="ABSTRACTED" property="abstracted"/>
+        <result column="DESCRIPTION" property="description"/>
+        <result column="PARENTS" property="parents"/>
+        <result column="LABELS" property="labels"/>
+    </resultMap>
+
+    <select id="getEnvironments" resultMap="EnvironmentRecord">
+        SELECT COMMIT_ID, NAME, DISABLED, ABSTRACTED, DESCRIPTION, PARENTS, LABELS
+        FROM environments
+        WHERE COMMIT_ID = #{id};
+    </select>
+
+    <resultMap id="HostRecord" type="HostRecord">
+        <id column="COMMIT_ID" property="commitId"/>
+        <id column="ENV" property="env"/>
+        <id column="NAME" property="name"/>
+        <result column="DISABLED" property="disabled"/>
+        <result column="USER" property="user"/>
+        <result column="PORT" property="port"/>
+        <result column="CHANNEL" property="channel"/>
+        <result column="RETIRED" property="retired"/>
+        <result column="LABELS" property="labels"/>
+        <result column="DESCRIPTION" property="description"/>
+    </resultMap>
+
+    <select id="getHosts" resultMap="HostRecord">
+        SELECT COMMIT_ID, ENV, NAME, DISABLED, USER, PORT, CHANNEL, RETIRED, LABELS, DESCRIPTION
+        FROM hosts
+        WHERE COMMIT_ID = #{id};
+    </select>
+
+    <resultMap id="HostGroupRecord" type="HostGroupRecord">
+        <id column="COMMIT_ID" property="commitId"/>
+        <id column="ENV" property="env"/>
+        <id column="NAME" property="name"/>
+        <result column="DISABLED" property="disabled"/>
+        <result column="OVERRIDE" property="override"/>
+        <result column="DESCRIPTION" property="description"/>
+        <result column="HOSTS" property="hosts"/>
+        <result column="INHERITS" property="inherits"/>
+        <result column="INHERITS_RETIRED" property="inheritsRetired"/>
+    </resultMap>
+
+    <select id="getHostGroups" resultMap="HostGroupRecord">
+        SELECT COMMIT_ID, ENV, NAME, DISABLED, OVERRIDE, DESCRIPTION, HOSTS, INHERITS, INHERITS_RETIRED
+        FROM host_groups
+        WHERE COMMIT_ID = #{id};
+    </select>
+
+    <resultMap id="ProjectRecord" type="ProjectRecord">
+        <id column="COMMIT_ID" property="commitId"/>
+        <id column="NAME" property="projectName"/>
+        <result column="DISABLED" property="disabled"/>
+        <result column="NAME_GENERATOR" property="projectNameGenerator"/>
+        <result column="VARIABLE_GROUP_GENERATOR" property="variableGroupGenerator"/>
+        <result column="PROJECT_KEY" property="key"/>
+        <result column="ACTIVE_IN_ENV" property="activeInEnv"/>
+        <result column="DESCRIPTION" property="description"/>
+        <result column="PARENTS" property="parents"/>
+        <result column="PLAYBOOK_NAME" property="playbookName"/>
+        <result column="PROJECT_WHEN" property="when"/>
+        <result column="INCLUDED_IN_ENV" property="includedInEnv"/>
+        <result column="INCLUDED_ONLY_IN_ENV" property="includedOnlyInEnv"/>
+        <result column="EXCLUDED_IN_ENV" property="excludedInEnv"/>
+        <result column="SHARING" property="sharing"/>
+    </resultMap>
+
+    <select id="getProjects" resultMap="ProjectRecord">
+        SELECT COMMIT_ID, NAME, DISABLED, ABSTRACTED, NAME_GENERATOR, PROJECT_KEY,
+               ACTIVE_IN_ENV, DESCRIPTION, PARENTS, PLAYBOOK_NAME, PROJECT_WHEN,
+               INCLUDED_IN_ENV, INCLUDED_ONLY_IN_ENV, EXCLUDED_IN_ENV, SHARING
+        FROM projects
+        WHERE COMMIT_ID = #{id};
+    </select>
+
+    <resultMap id="Assignment" type="Assignment">
+        <id column="COMMIT_ID" property="commitId"/>
+        <id column="VARIABLE_KEY" property="id"/>
+        <result column="DISABLED" property="disabled"/>
+        <result column="ENV" property="envName"/>
+        <result column="PROJECT" property="projectName"/>
+        <result column="SCOPE" property="scope"/>
+        <result column="VARIABLE_INFO" property="variableInfo"/>
+    </resultMap>
+
+    <select id="getAssigns" resultMap="Assignment">
+        SELECT COMMIT_ID, VARIABLE_KEY, DISABLED, ENV, PROJECT, SCOPE, VARIABLE_INFO
+        FROM assignments
+        WHERE COMMIT_ID = #{id};
+    </select>
+
+    <insert id="addCommit" useGeneratedKeys="true" keyColumn="ID" keyProperty="id">
+        INSERT INTO commits(AUTHOR, TIMESTAMP, PARENT_ID)
+        VALUES (#{author}, #{timestamp}, #{parentId});
+    </insert>
+
+    <insert id="addBranch">
+        INSERT INTO branches(NAME, COMMIT_ID)
+        VALUES (#{name}, #{head})
+    </insert>
+
+    <update id="updateBranch">
+        UPDATE branches
+        SET COMMIT_ID = #{head}
+        WHERE NAME = #{name}
+    </update>
+
+    <insert id="addEnvironment">
+        INSERT INTO environments(COMMIT_ID, NAME, DISABLED, ABSTRACTED, PARENTS, LABELS)
+        VALUES (#{commitId}, #{name}, #{disabled}, #{abstracted}, #{parents}, #{labels});
+    </insert>
+
+    <insert id="addHost">
+        INSERT INTO hosts(COMMIT_ID, ENV, NAME, DISABLED, USER, PORT, CHANNEL, RETIRED)
+        VALUES (#{commitId}, #{env}, #{name}, #{disabled}, #{user}, #{port}, #{channel}, #{retired})
+    </insert>
+
+    <insert id="addHostGroup">
+        INSERT INTO host_groups(COMMIT_ID, ENV, NAME, DISABLED, OVERRIDE, HOSTS, INHERITS, INHERITS_RETIRED)
+        VALUES (#{commitId}, #{env}, #{name}, #{disabled}, #{override}, #{hosts}, #{inherits}, #{inheritsRetired})
+    </insert>
+
+    <insert id="addProject">
+        INSERT INTO projects(COMMIT_ID, NAME, DISABLED, ABSTRACTED, NAME_GENERATOR, PROJECT_KEY,
+                             ACTIVE_IN_ENV, PARENTS, PLAYBOOK_NAME, PROJECT_WHEN,
+                             INCLUDED_IN_ENV, INCLUDED_ONLY_IN_ENV, EXCLUDED_IN_ENV)
+        VALUES (#{commitId}, #{projectName}, #{disabled}, #{abstracted}, #{projectNameGenerator}, #{key},
+                #{activeInEnv}, #{parents}, #{playbookName}, #{when},
+                #{includedInEnv}, #{includedOnlyInEnv}, #{excludedInEnv})
+    </insert>
+
+    <insert id="addAssign">
+        INSERT INTO assignments(COMMIT_ID, VARIABLE_KEY, DISABLED, ENV, PROJECT, SCOPE, VARIABLE_INFO)
+        VALUES (#{commitId}, #{id}, #{disabled}, #{envName}, #{projectName}, #{scope}, #{variableInfo})
+    </insert>
+</mapper>

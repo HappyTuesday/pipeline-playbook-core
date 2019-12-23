@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="defaultStatementTimeout" value="10"/>
+    </settings>
+    <typeAliases>
+        <typeAlias type="com.yit.deploy.core.records.Branch" alias="Branch"/>
+        <typeAlias type="com.yit.deploy.core.records.Commit" alias="Commit"/>
+        <typeAlias type="com.yit.deploy.core.records.EnvironmentRecord" alias="EnvironmentRecord"/>
+        <typeAlias type="com.yit.deploy.core.records.HostRecord" alias="HostRecord"/>
+        <typeAlias type="com.yit.deploy.core.records.HostGroupRecord" alias="HostGroupRecord"/>
+        <typeAlias type="com.yit.deploy.core.records.ProjectRecord" alias="ProjectRecord"/>
+        <typeAlias type="com.yit.deploy.core.records.Assignment" alias="Assignment"/>
+        <typeAlias type="com.yit.deploy.core.records.BuildRecord" alias="BuildRecord"/>
+        <typeAlias type="com.yit.deploy.core.records.Config" alias="Config"/>
+    </typeAliases>
+    <typeHandlers>
+        <typeHandler handler="com.yit.deploy.core.storage.persistent.ListTypeHandler"/>
+        <typeHandler handler="com.yit.deploy.core.storage.persistent.AbstractCollectionTypeHandler"/>
+        <typeHandler handler="com.yit.deploy.core.storage.persistent.LinkedHashMapTypeHandler"/>
+        <typeHandler handler="com.yit.deploy.core.storage.persistent.ClosureInfoHandler"/>
+        <typeHandler handler="com.yit.deploy.core.storage.persistent.VariableInfoHandler"/>
+    </typeHandlers>
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="url" value="${db.url}"/>
+                <property name="username" value="${db.username}"/>
+                <property name="password" value="${db.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper resource="storage/persistent/mappers/recordTable.xml"/>
+        <mapper resource="storage/persistent/mappers/build.xml"/>
+        <mapper resource="storage/persistent/mappers/config.xml"/>
+    </mappers>
+</configuration>

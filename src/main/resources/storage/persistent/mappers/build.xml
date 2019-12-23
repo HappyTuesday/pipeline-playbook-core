@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yit.deploy.core.storage.persistent.BuildMapper">
+
+    <resultMap id="BuildRecord" type="BuildRecord">
+        <id column="ID" property="id"/>
+        <id column="PARENT_ID" property="parentId"/>
+        <id column="DEPLOY_USER_NAME" property="deployUserName"/>
+        <id column="JOB_NAME" property="jobName"/>
+        <id column="ENV_NAME" property="envName"/>
+        <id column="PROJECT_NAME" property="projectName"/>
+        <id column="JENKINS_BUILD" property="projectName"/>
+
+        <id column="RECORD_COMMIT_ID" property="recordCommitId"/>
+        <id column="CONFIG_COMMIT_HASH" property="configCommitHash"/>
+
+        <id column="PLAYS" property="plays"/>
+        <id column="TASKS_TO_SKIP" property="tasksToSkip"/>
+        <id column="SERVERS" property="servers"/>
+
+        <id column="STARTED_TIME" property="startedTime"/>
+        <id column="FINISHED_TIME" property="finishedTime"/>
+        <id column="FAILED" property="failed"/>
+        <id column="FAILED_TYPE" property="failedType"/>
+        <id column="FAILED_MESSAGE" property="failedMessage"/>
+
+        <id column="PROJECT_COMMIT_BRANCH" property="projectCommitBranch"/>
+        <id column="PROJECT_COMMIT_HASH" property="projectCommitHash"/>
+        <id column="PROJECT_COMMIT_EMAIL" property="projectCommitEmail"/>
+        <id column="PROJECT_COMMIT_DETAIL" property="projectCommitDetail"/>
+        <id column="PROJECT_COMMIT_DATE" property="projectCommitDate"/>
+
+        <id column="USER_PARAMETERS" property="userParameters"/>
+    </resultMap>
+    
+    <insert id="addBuild" useGeneratedKeys="true" keyColumn="ID" keyProperty="id">
+        INSERT INTO BUILDS(
+            PARENT_ID,
+            DEPLOY_USER_NAME,
+            JOB_NAME,
+            ENV_NAME,
+            PROJECT_NAME,
+            JENKINS_BUILD,
+
+            RECORD_COMMIT_ID,
+            CONFIG_COMMIT_HASH,
+
+            PLAYS,
+            TASKS_TO_SKIP,
+            SERVERS,
+
+            STARTED_TIME,
+            FINISHED_TIME,
+            FAILED,
+            FAILED_TYPE,
+            FAILED_MESSAGE,
+
+            PROJECT_COMMIT_BRANCH,
+            PROJECT_COMMIT_HASH,
+            PROJECT_COMMIT_EMAIL,
+            PROJECT_COMMIT_DETAIL,
+            PROJECT_COMMIT_DATE,
+
+            USER_PARAMETERS      
+        )
+        VALUES (
+            #{parentId},
+            #{deployUserName},
+            #{jobName},
+            #{envName},
+            #{projectName},
+            #{jenkinsBuild},
+
+            #{recordCommitId},
+            #{configCommitHash},
+
+            #{plays},
+            #{tasksToSkip},
+            #{servers},
+
+            #{startedTime},
+            #{finishedTime},
+            #{failed},
+            #{failedType},
+            #{failedMessage},
+
+            #{projectCommitBranch},
+            #{projectCommitHash},
+            #{projectCommitEmail},
+            #{projectCommitDetail},
+            #{projectCommitDate},
+
+            #{userParameters}
+        )
+    </insert>
+
+    <update id="updateProjectCommitToBuild">
+        UPDATE BUILDS
+        SET PROJECT_COMMIT_BRANCH = #{projectCommitBranch},
+            PROJECT_COMMIT_HASH = #{projectCommitHash},
+            PROJECT_COMMIT_EMAIL = #{projectCommitEmail},
+            PROJECT_COMMIT_DETAIL = #{projectCommitDetail},
+            PROJECT_COMMIT_DATE = #{projectCommitDate}
+        WHERE ID = #{id}
+    </update>
+
+    <update id="finishBuild">
+        UPDATE BUILDS
+        SET FINISHED_TIME = #{finishedTime},
+            FAILED = #{failed},
+            FAILED_TYPE = #{failedType},
+            FAILED_MESSAGE = #{failedMessage}
+        WHERE ID = #{id}
+    </update>
+
+    <select id="getBuild" resultMap="BuildRecord">
+        SELECT
+            ID,
+            PARENT_ID,
+            DEPLOY_USER_NAME,
+            JOB_NAME,
+            ENV_NAME,
+            PROJECT_NAME,
+            JENKINS_BUILD,
+
+            RECORD_COMMIT_ID,
+            CONFIG_COMMIT_HASH,
+
+            PLAYS,
+            TASKS_TO_SKIP,
+            SERVERS,
+
+            STARTED_TIME,
+            FINISHED_TIME,
+            FAILED,
+            FAILED_TYPE,
+            FAILED_MESSAGE,
+
+            PROJECT_COMMIT_BRANCH,
+            PROJECT_COMMIT_HASH,
+            PROJECT_COMMIT_EMAIL,
+            PROJECT_COMMIT_DETAIL,
+            PROJECT_COMMIT_DATE,
+
+            USER_PARAMETERS
+        FROM BUILDS
+        WHERE ID = #{buildId}
+    </select>
+
+    <select id="getJobLastBuild" resultMap="BuildRecord">
+        SELECT
+            ID,
+            PARENT_ID,
+            DEPLOY_USER_NAME,
+            JOB_NAME,
+            ENV_NAME,
+            PROJECT_NAME,
+            JENKINS_BUILD,
+
+            RECORD_COMMIT_ID,
+            CONFIG_COMMIT_HASH,
+
+            PLAYS,
+            TASKS_TO_SKIP,
+            SERVERS,
+
+            STARTED_TIME,
+            FINISHED_TIME,
+            FAILED,
+            FAILED_TYPE,
+            FAILED_MESSAGE,
+
+            PROJECT_COMMIT_BRANCH,
+            PROJECT_COMMIT_HASH,
+            PROJECT_COMMIT_EMAIL,
+            PROJECT_COMMIT_DETAIL,
+            PROJECT_COMMIT_DATE,
+
+            USER_PARAMETERS
+        FROM BUILDS
+        WHERE ID = (
+            SELECT MAX(ID) FROM BUILDS
+            WHERE JOB_NAME = #{jobName}
+            AND FINISHED_TIME IS NOT NULL
+        )
+    </select>
+
+    <select id="queryBuilds" resultMap="BuildRecord">
+        SELECT
+            ID,
+            PARENT_ID,
+            DEPLOY_USER_NAME,
+            JOB_NAME,
+            ENV_NAME,
+            PROJECT_NAME,
+            JENKINS_BUILD,
+
+            RECORD_COMMIT_ID,
+            CONFIG_COMMIT_HASH,
+
+            PLAYS,
+            TASKS_TO_SKIP,
+            SERVERS,
+
+            STARTED_TIME,
+            FINISHED_TIME,
+            FAILED,
+            FAILED_TYPE,
+            FAILED_MESSAGE,
+
+            PROJECT_COMMIT_BRANCH,
+            PROJECT_COMMIT_HASH,
+            PROJECT_COMMIT_EMAIL,
+            PROJECT_COMMIT_DETAIL,
+            PROJECT_COMMIT_DATE,
+
+            USER_PARAMETERS
+        FROM BUILDS
+        WHERE 1=1
+        <if test="jobName != null">
+            AND JOB_NAME = #{jobName}
+        </if>
+        <if test="envName != null">
+            AND ENV_NAME = #{envName}
+        </if>
+        <if test="projectName != null">
+            AND PROJECT_NAME = #{projectName}
+        </if>
+        <if test="finished != null">
+            AND FINISHED_TIME IS <if test="finished">NOT</if> NULL
+        </if>
+        <if test="failed != null">
+            AND FAILED = #{failed}
+        </if>
+        <if test="failedType != null">
+            AND FAILED_TYPE = #{failedType}
+        </if>
+        ORDER BY ID DESC
+        LIMIT #{from},#{to}
+    </select>
+
+    <select id="queryBuildsCount">
+        SELECT COUNT(*)
+        FROM BUILDS
+        WHERE 1=1
+        <if test="jobName != null">
+            AND JOB_NAME = #{jobName}
+        </if>
+        <if test="envName != null">
+            AND ENV_NAME = #{envName}
+        </if>
+        <if test="projectName != null">
+            AND PROJECT_NAME = #{projectName}
+        </if>
+        <if test="finished != null">
+            AND FINISHED_TIME IS <if test="finished">NOT</if> NULL
+        </if>
+        <if test="failed != null">
+            AND FAILED = #{failed}
+        </if>
+        <if test="failedType != null">
+            AND FAILED_TYPE = #{failedType}
+        </if>
+    </select>
+</mapper>
