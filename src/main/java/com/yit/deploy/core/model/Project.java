@@ -261,4 +261,8 @@ public class Project {
     public boolean belongsTo(String parentName) {
         return Lambda.any(descending, p -> p.projectName.equals(parentName));
     }
+
+    public List<Project> getDescending() {
+        return descending;
+    }
 }
