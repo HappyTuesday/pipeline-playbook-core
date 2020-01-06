@@ -140,6 +140,12 @@ public class UserParameterVariable<T> extends BaseVariable<T> {
         if (choices != null) {
             p.setChoices((List) context.concreteVariable(choices));
         }
+        if (p.getDefaultValue() != null && p.getChoices() != null) {
+            // ensure that the default-value is always at the first place of the choices
+            p.getChoices().remove(p.getDefaultValue());
+            //noinspection unchecked
+            p.getChoices().add(0, p.getDefaultValue());
+        }
         p.setOrder(order);
         p.setRequired(required);
         if (options != null) {
