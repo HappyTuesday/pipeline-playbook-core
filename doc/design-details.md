@@ -85,34 +85,7 @@ Groovy是一款基于JVM虚拟机的脚本编程语言，擅长概念描述，�
 
 以下是上述思路的设计图
 
-```plantuml
-actor devops
-participant "Jenkins" as jenkins
-participant "playbook-pipeline" as pipeline
-participant "GIT Repository" as git
-
-devops -> git : write and push groovy scripts
-activate git
-git -> pipeline : groovy scripts changed
-deactivate git
-activate pipeline
-pipeline -> pipeline : evaluate scripts
-pipeline -> jenkins : generate Jenkins jobs
-deactivate pipeline
-...
-devops -> jenkins : execute job
-activate jenkins
-jenkins -> pipeline : call playbook-pipeline
-activate pipeline
-pipeline -> git : pull groovy scripts
-pipeline -> pipeline : evaluate scripts
-pipeline -> pipeline : execute related script
-pipeline -> jenkins : print realtime execution progress
-deactivate pipeline
-jenkins -> devops : show execution progress
-deactivate jenkins
-...
-```
+![design-detail](images/global_design_sequence.png)
 
 ### 2.2. 顶层结构与概念
 
@@ -216,53 +189,4 @@ Jenkins Job指的是Jenkins上的一个Job，是通往`playbook-pipeline`世界�
 
 我们用一张图来总结上节的这些概念
 
-```plantuml
-package "env1" {
-    [var v = 0]
-
-    [host1 172.20.1.1]
-    [host2 172.20.1.2]
-    [host3 172.20.1.3]
-
-    [host-group1]
-    [host-group2]
-    [host-group3]
-}
-
-package "playbook1" {
-    [var v = 1]
-
-    node "play1" {
-        database "task1"
-        database "task2"
-    }
-
-    node "play2" {
-        [var v = 2]
-
-        database "task3"
-        database "task4"
-    }
-}
-
-package "project1" {
-    [var v = 3]
-
-    folder "override testenv" {
-        [var v = 4]
-    }
-
-    folder "override prod" {
-        [var v = 5]
-    }
-}
-
-playbook1 --> project1
-
-node "env1-project1" as job1
-
-env1 --> job1
-project1 --> job1
-[var v = 3] --> job1
-
-```
+![pipeline-component-use-case](images/pipeline-component-use-case.png)

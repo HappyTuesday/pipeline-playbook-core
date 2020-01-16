@@ -1,0 +1,28 @@
+@startuml
+actor devops
+participant "Jenkins" as jenkins
+participant "playbook-pipeline" as pipeline
+participant "GIT Repository" as git
+
+devops -> git : write and push groovy scripts
+activate git
+git -> pipeline : groovy scripts changed
+deactivate git
+activate pipeline
+pipeline -> pipeline : evaluate scripts
+pipeline -> jenkins : generate Jenkins jobs
+deactivate pipeline
+...
+devops -> jenkins : execute job
+activate jenkins
+jenkins -> pipeline : call playbook-pipeline
+activate pipeline
+pipeline -> git : pull groovy scripts
+pipeline -> pipeline : evaluate scripts
+pipeline -> pipeline : execute related script
+pipeline -> jenkins : print realtime execution progress
+deactivate pipeline
+jenkins -> devops : show execution progress
+deactivate jenkins
+...
+@enduml
