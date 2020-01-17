@@ -1,7 +1,7 @@
 @startuml
 actor devops
 participant "Jenkins" as jenkins
-participant "playbook-pipeline" as pipeline
+participant "pipeline-playbook" as pipeline
 participant "GIT Repository" as git
 
 devops -> git : write and push groovy scripts
@@ -15,7 +15,7 @@ deactivate pipeline
 ...
 devops -> jenkins : execute job
 activate jenkins
-jenkins -> pipeline : call playbook-pipeline
+jenkins -> pipeline : call pipeline-playbook
 activate pipeline
 pipeline -> git : pull groovy scripts
 pipeline -> pipeline : evaluate scripts

@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 /**
- * To allow real deploy logic defined outside the playbook-pipeline-plugin, we introduce a deploy-config project, in which
+ * To allow real deploy logic defined outside the pipeline-playbook-plugin, we introduce a deploy-config project, in which
  * playbooks and environment scripts and projects definition are defined. The so-called deploy-config can be saved in
  * a GIT repository or just in the local filesystem on one Jenkins node.
  *

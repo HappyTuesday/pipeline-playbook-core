@@ -1,10 +1,10 @@
-# Playbook-Pipeline
+# pipeline-playbook
 
-playbook-pipeline是一款用于协助开发运维人员（devops）进行日常运维工作的Jenkins插件。
+pipeline-playbook是一款用于协助开发运维人员（devops）进行日常运维工作的Jenkins插件。
 
 ## 1. 背景与需求
 
-在本章中我们对运维人员日常工作中遇到的问题和痛点进行分析，以确定playbook-pipeline需要做哪些事情。我们着重讨论运维人员日常要做的两大事情：维护数据和维护脚本。
+在本章中我们对运维人员日常工作中遇到的问题和痛点进行分析，以确定pipeline-playbook需要做哪些事情。我们着重讨论运维人员日常要做的两大事情：维护数据和维护脚本。
 
 ### 1.1. 运维需要维护的数据
 
@@ -66,7 +66,7 @@ playbook-pipeline是一款用于协助开发运维人员（devops）进行日常
 
 ## 2. 设计思路与基本概念
 
-基于上一章关于运维工作的特征，我们开发了playbook-pipeline插件。在本章中我们讨论playbook-pipeline中的设计思路和基本概念。
+基于上一章关于运维工作的特征，我们开发了pipeline-playbook插件。在本章中我们讨论pipeline-playbook中的设计思路和基本概念。
 
 ### 2.1. 设计思路
 
@@ -77,8 +77,8 @@ Groovy是一款基于JVM虚拟机的脚本编程语言，擅长概念描述，�
 
 因此我们选择Groovy作为描述运维数据和运维脚本的基础语言。
 
-在选择Groovy之后，playbook-pipeline要做的就是按照Groovy的语法定义一组DSL，用于方便运维描述数据、数据之间的关系，脚本以及脚本之间的关系。
-运维要做的就是编写和维护一组Groovy脚本。playbook-pipeline宿主于Jenkins中，接收这组Groovy脚本，并对其进行解析。
+在选择Groovy之后，pipeline-playbook要做的就是按照Groovy的语法定义一组DSL，用于方便运维描述数据、数据之间的关系，脚本以及脚本之间的关系。
+运维要做的就是编写和维护一组Groovy脚本。pipeline-playbook宿主于Jenkins中，接收这组Groovy脚本，并对其进行解析。
 根据解析结果，自动生成相应的Jenkins Job，然后由devops在Jenkins页面上执行特定的Job，并最终执行相应的脚本。
 
 为了支持变更回溯，我们使用GIT托管Groovy脚本。
@@ -89,7 +89,7 @@ Groovy是一款基于JVM虚拟机的脚本编程语言，擅长概念描述，�
 
 ### 2.2. 顶层结构与概念
 
-在分析完需求之后，我们正式进入playbook-pipeline世界。为了便于表述，我们先介绍一些基本概念。
+在分析完需求之后，我们正式进入pipeline-playbook世界。为了便于表述，我们先介绍一些基本概念。
 
 #### 2.2.1. 环境 environment, env  
 
@@ -176,14 +176,14 @@ Groovy是一款基于JVM虚拟机的脚本编程语言，擅长概念描述，�
   
 Job表示处于某个特定环境下的项目。Job是计算的结果，由项目和环境共同决定，无法对其直接修改。每个job均包含一组变量的定义，这些变量是这个job对应的环境和项目在层级覆盖之后的最终结果。
   
-单纯的项目是无法执行的，但是job可以执行。`playbook-pipeline`在发现groovy scripts变更之后会计算出所有的job，并根据这些job的信息生成对应的Jenkins job。
+单纯的项目是无法执行的，但是job可以执行。`pipeline-playbook`在发现groovy scripts变更之后会计算出所有的job，并根据这些job的信息生成对应的Jenkins job。
   
 只有具体的环境和具体的项目的组合才能生成job。项目可以配置只在某些环境生成job。Job是可以直接执行的，不需要依赖于Jenkins。
   
 #### 2.2.13. Jenkins Job  
 
-Jenkins Job指的是Jenkins上的一个Job，是通往`playbook-pipeline`世界的入口点。每个Jenkins Job均可以定一组参数，这些参数在执行Job的Jenkins页面上以文本框、单选框、复选框和下拉框的形式显示出来。
-用户在点击`Build`按钮之前可以设置这些参数，并在点击后将这些参数传递给`playbook-pipeline`。
+Jenkins Job指的是Jenkins上的一个Job，是通往`pipeline-playbook`世界的入口点。每个Jenkins Job均可以定一组参数，这些参数在执行Job的Jenkins页面上以文本框、单选框、复选框和下拉框的形式显示出来。
+用户在点击`Build`按钮之前可以设置这些参数，并在点击后将这些参数传递给`pipeline-playbook`。
 
 ### 2.3. 概念图
 

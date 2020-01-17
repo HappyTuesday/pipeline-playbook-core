@@ -1,6 +1,6 @@
 # Playbook Pipeline Core
 
-This jar is designed as the container of the core logic for playbook-pipeline plugin.
+This jar is designed as the container of the core logic for pipeline-playbook plugin.
 
 ## Goal
 
@@ -8,7 +8,7 @@ To resolve the problem of the more and more complicated logic involved in the pr
 
 This plugin is an engine to parse & execute a so-called deploy.config project in which you can define all environments(test env and prod env), projects(your business projects) and the actual compiling and deploying logic(called playbooks).
 
-So we have one plugin(this plugin, the playbook-pipeline-plugin) and a deploy.config project. We have a close look at these two components.
+So we have one plugin(this plugin, the pipeline-playbook-plugin) and a deploy.config project. We have a close look at these two components.
 
 ### Project deploy.config
 
@@ -21,9 +21,9 @@ Project deploy.config contains following information:
 * Project  
   A project is a structure that normally relates to a business git repository containing the source code. A project contains a project name, some project specified variables, and metadata. Every project can select a playbook as its compiling & deploying method.
 
-### Plugin playbook-pipeline-plugin
+### Plugin pipeline-playbook-plugin
 
-Plugin playbook-pipeline-plugin load and parse the deploy.config project to determine all the information(environments, playbooks and projects), and for every project in every environment we generate a Jenkins job. 
+Plugin pipeline-playbook-plugin load and parse the deploy.config project to determine all the information(environments, playbooks and projects), and for every project in every environment we generate a Jenkins job. 
 
 A generated job means a project in a specified environment.
 
